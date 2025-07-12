@@ -50,10 +50,14 @@ jobs:
               run: terraform plan
               working-directory: ./terraform
 
-            - name: Terraform Apply
-              run: terraform apply -auto-approve
+            - name: Terraform Destroy
+              run: terraform destroy -auto-approve
               working-directory: ./terraform
 
-            - name: Deploy Next.js app to S3
-              run: |
-                  aws s3 sync ./m4ace-web/out s3://m4ace-class-s3-bucket-for-testing --delete
+            # - name: Terraform Apply
+            #   run: terraform apply -auto-approve
+            #   working-directory: ./terraform
+
+            # - name: Deploy Next.js app to S3
+            #   run: |
+            #       aws s3 sync ./m4ace-web/out s3://m4ace-class-s3-bucket-for-testing --delete
