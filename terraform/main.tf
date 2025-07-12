@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "bucket" {
-  bucket = "m4ace-class-s3-bucket-for-testing"
+  bucket = "m4ace-class-s3-bucket-for-testing12345"
 
   tags = {
     Name        = "My bucket"
