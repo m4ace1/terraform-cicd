@@ -20,7 +20,7 @@ jobs:
               run: |
                   npm install
                   npm run build
-              directory: ./m4ace-web
+              working-directory: ./m4ace-web
 
             - name: aunticate to AWS
               uses: aws-actions/configure-aws-credentials@v3
@@ -35,23 +35,24 @@ jobs:
                   terraform_version: 1.5.7
             - name: Terraform Init
               run: terraform init
-              directory: ./terraform
+              working-directory: ./terraform
 
             - name: Terraform Validate
               run: terraform validate
-              directory: ./terraform
+              working-directory: ./terraform
 
             - name: Terraform Format
               run: terraform fmt -recursive
-              directory: ./terraform
+
+              working-directory: ./terraform
 
             - name: Terraform Plan
               run: terraform plan
-              directory: ./terraform
+              working-directory: ./terraform
 
             - name: Terraform Apply
               run: terraform apply -auto-approve
-              directory: ./terraform
+              working-directory: ./terraform
 
             - name: Deploy Next.js app to S3
               run: |
