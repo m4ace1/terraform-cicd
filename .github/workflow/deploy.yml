@@ -1,0 +1,58 @@
+name: cicd pipeline
+
+on:
+    push:
+        branches: ['dev', 'main', test, qa]
+    pull_request:
+        branches: [main, dev, test, qa]
+jobs:
+    upgrade:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout to Gihub
+              uses: actions/checkout@v4
+
+            - name: build and push nextjs app
+              uses: action/setup-node@v4
+              with:
+                  node-version: '20.x'
+            - name: Install dependencies and build
+              run: |
+                  npm install
+                  npm run build
+              directory: ./m4ace-web
+
+            - name: aunticate to AWS
+              uses: aws-actions/configure-aws-credentials@v3
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: us-east-1
+
+            - name: install and run terraform
+              uses: hashicorp/setup-terraform@v2
+              with:
+                  terraform_version: 1.5.7
+            - name: Terraform Init
+              run: terraform init
+              directory: ./terraform
+
+            - name: Terraform Validate
+              run: terraform validate
+              directory: ./terraform
+
+            - name: Terraform Format
+              run: terraform fmt -recursive
+              directory: ./terraform
+
+            - name: Terraform Plan
+              run: terraform plan
+              directory: ./terraform
+
+            - name: Terraform Apply
+              run: terraform apply -auto-approve
+              directory: ./terraform
+
+            - name: Deploy Next.js app to S3
+              run: |
+                  aws s3 sync ./m4ace-web/out s3://m4ace-class-s3-bucket-for-testing --delete
